@@ -27,7 +27,7 @@ module.exports = {
       fs.writeFileSync("ListasDeJugadores/ListaJugadores_Historico.json", jugadoresHistoricoJSON);
 
       // Mostrar el histórico completo en el chat
-      await interaction.reply("Histórico completo de jugadores:", { files: ["ListaJugadores_Historico.json"] });
+      await interaction.reply("Se estan importando las temporadas...");
 
       let temporada = 0;
       let jugadoresTemporada = [];
@@ -39,7 +39,7 @@ module.exports = {
         jugadoresTemporada = response.data;
 
         if (jugadoresTemporada.length === 0) {
-          break; // Salir del bucle si no hay más jugadores en la temporada
+          break;
         }
 
         // Almacenar jugadores de la temporada en un JSON
@@ -48,14 +48,21 @@ module.exports = {
         // Guardar el contenido en el archivo correspondiente a la temporada
         fs.writeFileSync(`ListasDeJugadores/ListaJugadores_Temporada${temporada}.json`, jugadoresTemporadaJSON);
 
-        // Incrementar el número de temporada
         temporada++;
       }
 
-      await interaction.followUp("Se han generado los JSON por temporada.");
+      // Restar 1 a la temporada para obtener el número de la última temporada descargada
+      const ultimaTemporada = temporada - 1;
+      await interaction.followUp(`Se han importado las temporadas. Última temporada descargada: ${ultimaTemporada}`);
+      
+      console.log("la temporada actual es: " + ultimaTemporada)
+
+      module.exports.ultimaTemporada = ultimaTemporada;
+
     } catch (error) {
       console.error("Error al obtener los jugadores:", error);
       await interaction.reply("Ocurrió un error al obtener los jugadores del equipo.");
     }
+
   },
 };

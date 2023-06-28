@@ -16,18 +16,43 @@ module.exports = {
     const { guild } = interaction;
 
     try {
-      const response = await axios.get("https://iosoccer-sa.bid/api/jugadores/t11");
-      const jugadores = response.data;
+      // Obtener el histórico de jugadores
+      const responseHistorico = await axios.get("https://iosoccer-sa.bid/api/jugadores");
+      const jugadoresHistorico = responseHistorico.data;
 
-      // Almacenar jugadores en un JSON
-      const jugadoresJSON = JSON.stringify(jugadores);
+      // Almacenar el histórico de jugadores en un JSON
+      const jugadoresHistoricoJSON = JSON.stringify(jugadoresHistorico);
 
-      // Guardar el contenido en el archivo ListaJugadores.json
-      fs.writeFileSync("ListaJugadores.json", jugadoresJSON);
+      // Guardar el contenido del histórico en el archivo ListaJugadores_Historico.json
+      fs.writeFileSync("ListasDeJugadores/ListaJugadores_Historico.json", jugadoresHistoricoJSON);
 
-      // Mostrar la lista completa en el chat
-      await interaction.reply("Lista completa de jugadores del equipo:", { files: ["ListaJugadores.json"] });
+      // Mostrar el histórico completo en el chat
+      await interaction.reply("Histórico completo de jugadores:", { files: ["ListaJugadores_Historico.json"] });
 
+      let temporada = 0;
+      let jugadoresTemporada = [];
+      let jugadoresTemporadaJSON = "";
+
+      // Obtener jugadores por temporada y generar JSON por temporada hasta que el resultado sea vacío
+      while (true) {
+        const response = await axios.get(`https://iosoccer-sa.bid/api/jugadores/t${temporada}`);
+        jugadoresTemporada = response.data;
+
+        if (jugadoresTemporada.length === 0) {
+          break; // Salir del bucle si no hay más jugadores en la temporada
+        }
+
+        // Almacenar jugadores de la temporada en un JSON
+        jugadoresTemporadaJSON = JSON.stringify(jugadoresTemporada);
+
+        // Guardar el contenido en el archivo correspondiente a la temporada
+        fs.writeFileSync(`ListasDeJugadores/ListaJugadores_Temporada${temporada}.json`, jugadoresTemporadaJSON);
+
+        // Incrementar el número de temporada
+        temporada++;
+      }
+
+      await interaction.followUp("Se han generado los JSON por temporada.");
     } catch (error) {
       console.error("Error al obtener los jugadores:", error);
       await interaction.reply("Ocurrió un error al obtener los jugadores del equipo.");

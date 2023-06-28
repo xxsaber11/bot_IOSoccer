@@ -15,4 +15,6 @@ client.commands = new Collection();
 
 loadEvents(client);
 
+require('./Handlers/anti-crash')(client);
+
 client.login(client.config.token);

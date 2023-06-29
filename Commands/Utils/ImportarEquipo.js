@@ -1,9 +1,4 @@
-const {
-  ChatInputCommandInteraction,
-  SlashCommandBuilder,
-  EmbedBuilder,
-  PermissionFlagsBits,
-} = require("discord.js");
+const { ChatInputCommandInteraction, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const fs = require("fs");
 const axios = require("axios");
 const cheerio = require("cheerio");
@@ -24,11 +19,12 @@ module.exports = {
 
       // Realizar la búsqueda en las páginas
       let page = 1;
-      let foundTeams = [];
-
+      let foundTeams = new Set();
+      let currentSeason = 0;
+      try {
       while (true) {
-        const url = `https://iosoccer-sa.bid/individuales?page=${page}`;
-        const response = await axios.get(url, { timeout: 3000000 });
+        const url = `https://iosoccer-sa.bid/individuales/t${currentSeason}?page=${page}`;
+        const response = await axios.get(url, { timeout: 90000 });
         const html = response.data;
 
         // Usar cheerio para buscar los elementos <a> con la clase deseada
@@ -36,33 +32,57 @@ module.exports = {
         const links = $("a.flex.items-center.justify-center.gap-x-1");
 
         if (links.length === 0) {
-          break; // No se encontraron más resultados, salir del bucle
+
+          
+          if (foundTeams.size === 0 && currentSeason >= 10) {
+            break; // Detener el bucle si no se encontraron equipos en las temporadas 10 en adelante
+          }
+          await interaction.editReply({
+            content: `Se encontraron ${foundTeams.size} equipos en la temporada ${currentSeason}.`
+          });
+          if (foundTeams.size > 0) {
+            // Guardar los equipos de la temporada en un archivo JSON
+            const listaEquiposTemporada = [...foundTeams];
+            const listaEquiposTemporadaJSON = JSON.stringify(listaEquiposTemporada, null, 2);
+            fs.writeFileSync(`ListasDeEquipos/ListaEquipos_Temporada${currentSeason}.json`, listaEquiposTemporadaJSON);
+          }
+          currentSeason++;
+          page = 1; // Reiniciar el número de página para la próxima temporada
+          foundTeams.clear(); // Reiniciar los equipos encontrados para la próxima temporada
+          continue; // No se encontraron más resultados, continuar con la próxima temporada
         }
 
         links.each(function () {
           const teamName = $(this).find("div").text().trim();
-          foundTeams.push(teamName);
+          foundTeams.add(teamName);
         });
 
         page++;
       }
-
-      // Eliminar duplicados de los equipos encontrados
-      const uniqueTeams = [...new Set(foundTeams)];
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        console.log('Ya se importaron todas las temporadas.');
+      } else {
+        console.error('Ocurrió un error:', error);
+      }
+    }
+      // Guardar los equipos de la última temporada en un archivo JSON
+      const listaEquiposUltimaTemporada = [...foundTeams];
+      const listaEquiposUltimaTemporadaJSON = JSON.stringify(listaEquiposUltimaTemporada, null, 2);
+      fs.writeFileSync(`ListasDeEquipos/ListaEquipos_Temporada${currentSeason}.json`, listaEquiposUltimaTemporadaJSON);
 
       // Generar el mensaje con los equipos encontrados
-      const mensajeEquipos = uniqueTeams.join("\n");
+      const mensajeEquipos = [...foundTeams].join("\n");
 
-      // Guardar los equipos en un archivo JSON
-      const listaEquipos = JSON.stringify(uniqueTeams, null, 2);
-      fs.writeFileSync("ListasDeEquipos/ListaEquipos.json", listaEquipos);
-      console.log("Aquí está la lista de equipos: " + listaEquipos);
+      // Guardar todos los equipos en un archivo JSON
+      const listaEquiposTotal = [...foundTeams];
+      const listaEquiposTotalJSON = JSON.stringify(listaEquiposTotal, null, 2);
+      fs.writeFileSync(`ListasDeEquipos/ListaEquipos_Total.json`, listaEquiposTotalJSON);
 
       // Editar la respuesta inicial con los resultados finales
       await interaction.editReply({
-        content: `Aquí tienes la lista actualizada de los equipos:\n${mensajeEquipos}` 
-        
-        //También se ha guardado en un archivo JSON.`,files: ["ListaEquipos.json"],
+        content: `Aquí tienes la lista actualizada de los equipos:\n${mensajeEquipos}`
+        // También se han guardado los archivos JSON por temporada.`, files: ["ListasDeEquipos/ListaEquipos_Temporada*.json", "ListasDeEquipos/ListaEquipos_Total.json"],
       });
     } catch (error) {
       console.error("Ocurrió un error:", error);

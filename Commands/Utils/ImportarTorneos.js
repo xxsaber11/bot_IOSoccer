@@ -34,34 +34,38 @@ module.exports = {
             return text;
           })
           .get();
-          console.log(torneos);
 
-          console.log(`Se importaron ${temporada} temporadas de Torneos: `, torneos);
+        console.log(`Se importaron de la temporada  ${temporada} estos Torneos: `, torneos);
 
         // Guardar los torneos en un archivo JSON por temporada
         const torneosJSON = JSON.stringify(torneos);
         fs.writeFileSync(`ListasDeTorneos/Torneos_Temporada${temporada}.json`, torneosJSON);
       } catch (error) {
-        console.error(`Error al capturar los torneos de la temporada ${temporada}:`, error);
+        console.error(`Error al capturar los torneos de la temporada ${temporada}:`);
       }
     }
 
     // Función para capturar todos los torneos
     async function capturarTodosLosTorneos() {
-      let temporada = 1;
+      let temporada = 0;
 
       while (true) {
-        await capturarTorneosPorTemporada(temporada);
         temporada++;
 
-        // Romper el bucle si no hay más torneos disponibles
+        try {
+          await capturarTorneosPorTemporada(temporada);
+        } catch (error) {
+          console.error(`Error al capturar los torneos de la temporada ${temporada}:`);
+        }
+
+        // Romper el bucle si el array de torneos está vacío
         const filePath = `ListasDeTorneos/Torneos_Temporada${temporada}.json`;
         if (!fs.existsSync(filePath)) {
           break;
         }
       }
 
-      console.log('Se han completo la importacion de torneos');
+      console.log('Se ha completado la importación de torneos');
     }
 
     await interaction.reply('Iniciando importación de torneos...');

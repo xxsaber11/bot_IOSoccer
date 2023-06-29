@@ -30,8 +30,7 @@ const {
       const mensajeTorneos = torneos.join("\n");
       // Enviar el mensaje al chat
       await interaction.channel.send(mensajeTorneos);
-      
-      await interaction.reply("Aquí tienes los torneos de la temporada seleccionada.");
+      await interaction.reply("Aquí tienes los torneos de la temporada seleccionada:");
     },
   };
   

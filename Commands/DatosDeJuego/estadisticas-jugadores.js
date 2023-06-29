@@ -1,6 +1,5 @@
 const { ChatInputCommandInteraction, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const fs = require("fs");
-const { config } = require("process");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -19,33 +18,49 @@ module.exports = {
         .setRequired(true)
     )
     .addStringOption((option) =>
-    option
-      .setName("torneo")
-      .setDescription("Nombre del torneo para filtrar")
-      .setRequired(false)
-  )
+      option
+        .setName("torneo")
+        .setDescription("Nombre del torneo para filtrar")
+        .setRequired(false)
+    )
     .setDefaultMemberPermissions(PermissionFlagsBits.ViewChannel),
 
   async execute(interaction, client) {
     const jugador = interaction.options.getString("jugador");
     const temporada = interaction.options.getInteger("temporada");
+    const torneo = interaction.options.getString("torneo");
 
     try {
       const jugadoresData = fs.readFileSync(`ListasDeJugadores/ListaJugadores_Temporada${temporada}.json`, "utf-8");
       const jugadores = JSON.parse(jugadoresData);
 
+      const torneosData = fs.readFileSync(`ListasDeTorneos/Torneos_Temporada${temporada}.json`, "utf-8");
+      const torneos = JSON.parse(torneosData);
+
       // Filtrar jugadores por el nombre
-      const jugadoresFiltrados = jugadores.filter((j) => j.name.toLowerCase().includes(jugador.toLowerCase()));
+      let jugadoresFiltrados = jugadores.filter((j) => j.name.toLowerCase().includes(jugador.toLowerCase()));
+
+      // Filtrar jugadores por el nombre del torneo
+      if (torneo) {
+        jugadoresFiltrados = jugadoresFiltrados.filter((j) => {
+          const jugadorTorneo = torneos.find((t) => t.toLowerCase() === torneo.toLowerCase());
+          return jugadorTorneo && j.torneo.toLowerCase() === jugadorTorneo.toLowerCase();
+        });
+      }
 
       if (jugadoresFiltrados.length > 0) {
-        const respuesta = jugadoresFiltrados.map((j) => {
-          const jugadorProperties = Object.entries(j).map(([key, value]) => `${key}: ${value}`).join("\n");
-          return `Estadísticas del jugador ${j.name}:\n${jugadorProperties}`;
-        }).join("\n\n");
+        const respuesta = jugadoresFiltrados
+          .map((j) => {
+            const jugadorProperties = Object.entries(j)
+              .map(([key, value]) => `${key}: ${value}`)
+              .join("\n");
+            return `Estadísticas del jugador ${j.name}:\n${jugadorProperties}`;
+          })
+          .join("\n\n");
 
         await interaction.reply(respuesta);
       } else {
-        await interaction.reply("No se encontraron jugadores con ese nombre en la temporada especificada.");
+        await interaction.reply("No se encontraron jugadores con ese nombre en la temporada y torneo especificados.");
       }
     } catch (error) {
       console.error(`Error al leer el archivo ListaJugadores_Temporada${temporada}.json:`, error);

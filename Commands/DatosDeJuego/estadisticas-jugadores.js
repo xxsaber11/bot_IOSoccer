@@ -18,6 +18,12 @@ module.exports = {
         .setDescription("Número de temporada para filtrar")
         .setRequired(true)
     )
+    .addStringOption((option) =>
+    option
+      .setName("torneo")
+      .setDescription("Nombre del torneo para filtrar")
+      .setRequired(false)
+  )
     .setDefaultMemberPermissions(PermissionFlagsBits.ViewChannel),
 
   async execute(interaction, client) {

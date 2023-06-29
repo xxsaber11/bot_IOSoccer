@@ -12,6 +12,7 @@
   "dependencies": {
     "ascii-table": "^0.0.9",
     "axios": "^1.4.0",
+    "cheerio": "^1.0.0-rc.12",
     "discord.js": "^14.11.0",
     "glob": "^8.0.3"
   }

@@ -15,7 +15,7 @@ module.exports = {
       option
         .setName("temporada")
         .setDescription("Número de temporada para filtrar")
-        .setRequired(true)
+        .setRequired(false)
     )
     .addStringOption((option) =>
       option
@@ -29,7 +29,7 @@ module.exports = {
     const jugador = interaction.options.getString("jugador");
     const temporada = interaction.options.getInteger("temporada");
     const torneo = interaction.options.getString("torneo");
-
+    console.log(torneo);
     try {
       const jugadoresData = fs.readFileSync(`ListasDeJugadores/ListaJugadores_Temporada${temporada}.json`, "utf-8");
       const jugadores = JSON.parse(jugadoresData);

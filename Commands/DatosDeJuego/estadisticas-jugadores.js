@@ -27,14 +27,14 @@ module.exports = {
 
   async execute(interaction, client) {
     const jugador = interaction.options.getString("jugador");
-    const temporada = interaction.options.getInteger("temporada");
-    const torneo = interaction.options.getString("torneo");
+    const temporada = interaction.options.getInteger("temporada")
+    const torneo = interaction.options.getString("torneo")
     console.log(torneo);
     try {
       const jugadoresData = fs.readFileSync(`ListasDeJugadores/ListaJugadores_Temporada${temporada}.json`, "utf-8");
       const jugadores = JSON.parse(jugadoresData);
 
-      const torneosData = fs.readFileSync(`ListasDeTorneos/Torneos_Temporada${temporada}.json`, "utf-8");
+      const torneosData = fs.readFileSync(`ListasDeTorneos/Torneos_TodasLasTemporadas.json`, "utf-8");
       const torneos = JSON.parse(torneosData);
 
       // Filtrar jugadores por el nombre
@@ -43,7 +43,10 @@ module.exports = {
       // Filtrar jugadores por el nombre del torneo
       if (torneo) {
         jugadoresFiltrados = jugadoresFiltrados.filter((j) => {
-          const jugadorTorneo = torneos.find((t) => t.toLowerCase() === torneo.toLowerCase());
+          const jugadorTorneo = torneos.find((t) => t && t.toLowerCase() === torneo.toLowerCase());
+          console.log("este es el jugador de torneo: "+jugadorTorneo+ "----------------------");
+          console.log("este es el torneo: "+torneo+ "----------------------");
+          console.log("estos son los torneos: "+torneos+ "----------------------");
           return jugadorTorneo && j.torneo.toLowerCase() === jugadorTorneo.toLowerCase();
         });
       }

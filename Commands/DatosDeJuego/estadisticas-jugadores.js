@@ -1,4 +1,4 @@
-const { ChatInputCommandInteraction, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { ChatInputCommandInteraction, SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
 const fs = require("fs");
 
 module.exports = {
@@ -30,6 +30,12 @@ module.exports = {
     const temporada = interaction.options.getInteger("temporada");
     const torneo = interaction.options.getString("torneo");
 
+    const server = {
+      name: "IOSoccer",
+      iconURL: "C:\Users\sebas\OneDrive\Escritorio\bot_IOSoccer\ImagenesEquipos\Meteors Gaming.png"
+    };
+
+
     try {
       const jugadoresData = fs.readFileSync(`ListasDeJugadores/ListaJugadores_Temporada${temporada}.json`, "utf-8");
       const jugadores = JSON.parse(jugadoresData);
@@ -49,7 +55,7 @@ module.exports = {
       }
     
       if (jugadoresFiltrados.length > 0) {
-        const respuesta = jugadoresFiltrados.map((j) => {
+        const mensajesRespuesta = jugadoresFiltrados.map((j) => {
           const equipo = j.team;
           const escudoPath = `ImagenesEquipos/${equipo}.png`;
           const escudoExists = fs.existsSync(escudoPath);
@@ -57,19 +63,22 @@ module.exports = {
           const jugadorProperties = Object.entries(j)
             .map(([key, value]) => `${key}: ${value}`)
             .join("\n");
-    
-          return {
-            jugadorProperties,
-            escudoAttachment,
-          };
-        });
-    
-        if (respuesta.length > 0) {
-          const mensajesRespuesta = respuesta.map(({ jugadorProperties, escudoAttachment }) => {
-            const mensaje = `Estadísticas del jugador:\n${jugadorProperties}`;
-            return { content: mensaje, files: escudoAttachment ? [escudoAttachment] : [] };
+        
+          const embed = new EmbedBuilder()
+            .setTitle("Estadísticas del jugador")
+            .setColor("#ff0000")
+            .setTimestamp()
+            .setDescription(jugadorProperties)
+            .setFooter({ text: "Estadisticas" });
+            if (escudoAttachment) {
+              embed.setImage(`attachment://${escudoAttachment.filename}`);
+            } else {
+              embed.setImage("URL de la imagen predeterminada");
+            }        
+            return { embeds: [embed], files: [escudoAttachment] };
           });
-    
+        
+        if (mensajesRespuesta.length > 0) {
           await Promise.all(mensajesRespuesta.map((mensaje) => interaction.reply(mensaje)));
         } else {
           await interaction.reply("No se encontraron jugadores con ese nombre en la temporada y torneo especificados.");

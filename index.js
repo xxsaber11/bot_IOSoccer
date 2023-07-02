@@ -15,6 +15,10 @@ client.commands = new Collection();
 
 loadEvents(client);
 
+// Carga y ejecución del archivo ImportarPartidos.js
+const importarPartidosModule = require("./Commands/Utils/importarpartidos.js");
+importarPartidosModule.execute();
+
 require('./Handlers/anti-crash')(client);
 
 client.login(client.config.token);

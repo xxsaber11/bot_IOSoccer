@@ -1,4 +1,4 @@
-const { ChatInputCommandInteraction, SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const axios = require("axios");
 const fs = require("fs");
 
@@ -11,6 +11,7 @@ module.exports = {
   async execute(interaction) {
     const url = "https://iosoccer-sa.bid/api/partidos";
     const filePath = "ListasDePartidos/partidos.json";
+    const lobbyChannelId = "713573151971213322"; // Reemplaza con el ID del canal "lobby"
 
     try {
       // Función para descargar y procesar el JSON
@@ -31,7 +32,7 @@ module.exports = {
           }
 
           // Verificar si hay nuevos partidos
-          const newMatches = jsonData.filter((match) => !existingData.some((existingMatch) => existingMatch.id === match.id));
+          const newMatches = jsonData.filter((match) => !existingData.some((existingMatch) => existingMatch._id === match._id));
 
           if (newMatches.length > 0) {
             // Agregar los nuevos partidos al archivo JSON existente
@@ -40,14 +41,6 @@ module.exports = {
             // Guardar el archivo JSON actualizado
             fs.writeFileSync(filePath, JSON.stringify(existingData, null, 2));
 
-            // Mostrar los nuevos partidos como mensajes en Discord
-            for (const match of newMatches) {
-              const embed = new EmbedBuilder()
-                .setTitle("Partido nuevo")
-                .setDescription(`Equipo local: ${match.local}\nEquipo visitante: ${match.visitante}`);
-
-              await interaction.reply({ embeds: [embed] });
-            }
           }
         } catch (error) {
           console.error("Error al importar los partidos:", error);
@@ -60,13 +53,8 @@ module.exports = {
       // Establecer un temporizador para ejecutar la función cada 5 segundos
       const interval = setInterval(importarPartidos, 5000);
 
-      // Cuando se cierre la interacción, se detiene el temporizador
-      interaction.client.once("interactionEnd", () => {
-        clearInterval(interval);
-      });
     } catch (error) {
       console.error("Error al obtener partidos de forma automática:", error);
-      await interaction.reply("Ocurrió un error al importar los partidos. Por favor, inténtalo nuevamente más tarde.");
     }
   },
 };

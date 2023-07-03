@@ -31,46 +31,77 @@ module.exports = {
         const partido = matches.find((match) => match._id === partidoID);
 
         if (partido) {
-          // Crear la respuesta con las estadísticas del partido
-          const mensaje = `**Partido - ${partido.torneo}**
-          Fecha: ${partido.fecha}
-          Torneo: ${partido.torneo}
-          Equipo local: ${partido.teams[0].teamname}
-          Goles: ${partido.teams[0].score}
-          Tiros: ${partido.teams[0].statistics.shots}
-          Tiros a puerta: ${partido.teams[0].statistics.shotsontarget}
-          Pases: ${partido.teams[0].statistics.passes}
-          Pases completados: ${partido.teams[0].statistics.passescompleted}
-          Faltas: ${partido.teams[0].statistics.fouls}
-          Tarjetas amarillas: ${partido.teams[0].statistics.yellowcards}
-          Tarjetas rojas: ${partido.teams[0].statistics.redcards}
-          Fuera de juego: ${partido.teams[0].statistics.offsides}
-          Corners: ${partido.teams[0].statistics.corners}
-          Saques de banda: ${partido.teams[0].statistics.throwins}
-          Penales: ${partido.teams[0].statistics.penalties}
-          Tiros libres: ${partido.teams[0].statistics.freekicks}
-          Faltas recibidas: ${partido.teams[0].statistics.foulssuffered}
-          Goles encajados: ${partido.teams[0].statistics.goalsconceded}
-          Intercepciones: ${partido.teams[0].statistics.interceptions}
-          Autogoles: ${partido.teams[0].statistics.owngoals}
-          Entradas: ${partido.teams[0].statistics.tackles}
-          Entradas completadas: ${partido.teams[0].statistics.tacklescompleted}
-          Atajadas: ${partido.teams[0].statistics.saves}
-          Atajadas atrapadas: ${partido.teams[0].statistics.savescaught}
-          Distancia recorrida: ${partido.teams[0].statistics.distancecovered}
-          Asistencias: ${partido.teams[0].statistics.assists}
-          Despejes: ${partido.teams[0].statistics.goalkicks}
-          Pases clave: ${partido.teams[0].statistics.keypasses}
-          Oportunidades creadas: ${partido.teams[0].statistics.chancescreated}
-          Segundas asistencias: ${partido.teams[0].statistics.secondassists}
-          
-          
-          `;
-          
-          console.log("partido:", partido);
-          console.log("mensaje:", mensaje);
-          
-          await interaction.reply(mensaje);
+            const equipoLocal = partido.teams[0];
+            const equipoVisitante = partido.teams[1];
+            
+            const mensaje = `**Partido - ${partido.torneo}**
+            Fecha: ${partido.fecha}
+            Torneo: ${partido.torneo}
+            
+            Equipo local:
+            Nombre: ${equipoLocal.teamname}
+            Goles: ${equipoLocal.score}
+            Tiros: ${equipoLocal.statistics.shots}
+            Tiros a puerta: ${equipoLocal.statistics.shotsontarget}
+            Pases: ${equipoLocal.statistics.passes}
+            Pases completados: ${equipoLocal.statistics.passescompleted}
+            Faltas: ${equipoLocal.statistics.fouls}
+            Tarjetas amarillas: ${equipoLocal.statistics.yellowcards}
+            Tarjetas rojas: ${equipoLocal.statistics.redcards}
+            Fuera de juego: ${equipoLocal.statistics.offsides}
+            Corners: ${equipoLocal.statistics.corners}
+            Saques de banda: ${equipoLocal.statistics.throwins}
+            Penales: ${equipoLocal.statistics.penalties}
+            Tiros libres: ${equipoLocal.statistics.freekicks}
+            Faltas recibidas: ${equipoLocal.statistics.foulssuffered}
+            Goles encajados: ${equipoLocal.statistics.goalsconceded}
+            Intercepciones: ${equipoLocal.statistics.interceptions}
+            Autogoles: ${equipoLocal.statistics.owngoals}
+            Entradas: ${equipoLocal.statistics.tackles}
+            Entradas completadas: ${equipoLocal.statistics.tacklescompleted}
+            Atajadas: ${equipoLocal.statistics.saves}
+            Atajadas atrapadas: ${equipoLocal.statistics.savescaught}
+            Distancia recorrida: ${equipoLocal.statistics.distancecovered}
+            Asistencias: ${equipoLocal.statistics.assists}
+            Despejes: ${equipoLocal.statistics.goalkicks}
+            Pases clave: ${equipoLocal.statistics.keypasses}
+            Oportunidades creadas: ${equipoLocal.statistics.chancescreated}
+            Segundas asistencias: ${equipoLocal.statistics.secondassists}
+            
+            Equipo visitante:
+            Nombre: ${equipoVisitante.teamname}
+            Goles: ${equipoVisitante.score}
+            Tiros: ${equipoVisitante.statistics.shots}
+            Tiros a puerta: ${equipoVisitante.statistics.shotsontarget}
+            Pases: ${equipoVisitante.statistics.passes}
+            Pases completados: ${equipoVisitante.statistics.passescompleted}
+            Faltas: ${equipoVisitante.statistics.fouls}
+            Tarjetas amarillas: ${equipoVisitante.statistics.yellowcards}
+            Tarjetas rojas: ${equipoVisitante.statistics.redcards}
+            Fuera de juego: ${equipoVisitante.statistics.offsides}
+            Corners: ${equipoVisitante.statistics.corners}
+            Saques de banda: ${equipoVisitante.statistics.throwins}
+            Penales: ${equipoVisitante.statistics.penalties}
+            Tiros libres: ${equipoVisitante.statistics.freekicks}
+            Faltas recibidas: ${equipoVisitante.statistics.foulssuffered}
+            Goles encajados: ${equipoVisitante.statistics.goalsconceded}
+            Intercepciones: ${equipoVisitante.statistics.interceptions}
+            Autogoles: ${equipoVisitante.statistics.owngoals}
+            Entradas: ${equipoVisitante.statistics.tackles}
+            Entradas completadas: ${equipoVisitante.statistics.tacklescompleted}
+            Atajadas: ${equipoVisitante.statistics.saves}
+            Atajadas atrapadas: ${equipoVisitante.statistics.savescaught}
+            Distancia recorrida: ${equipoVisitante.statistics.distancecovered}
+            Asistencias: ${equipoVisitante.statistics.assists}
+            Despejes: ${equipoVisitante.statistics.goalkicks}
+            Pases clave: ${equipoVisitante.statistics.keypasses}
+            Oportunidades creadas: ${equipoVisitante.statistics.chancescreated}
+            Segundas asistencias: ${equipoVisitante.statistics.secondassists}`;
+            
+            console.log("partido:", partido);
+            console.log("mensaje:", mensaje);
+            
+            await interaction.reply(mensaje);
           
         } else {
           console.log("No se encontró un partido con el ID proporcionado.");

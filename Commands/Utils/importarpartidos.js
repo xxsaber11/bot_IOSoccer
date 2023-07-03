@@ -2,6 +2,10 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const axios = require("axios");
 const fs = require("fs");
 
+// Importar la función execute() del archivo partido.js
+const partido = require("../DatosDeJuego/partido.js");
+const partidoExecute = partido.execute;
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("importar-partidos")
@@ -52,6 +56,9 @@ module.exports = {
             if (counter === 50) {
               console.log("No hay nuevos partidos para importar.");
               counter = 0; // Reiniciar el contador
+
+              // Ejecutar la función execute() del archivo partido.js
+              await partidoExecute(interaction);
             } else {
               counter++;
             }

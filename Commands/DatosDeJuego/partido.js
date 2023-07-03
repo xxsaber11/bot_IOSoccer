@@ -41,7 +41,31 @@ module.exports = {
           Tiros a puerta: ${partido.teams[0].statistics.shotsontarget}
           Pases: ${partido.teams[0].statistics.passes}
           Pases completados: ${partido.teams[0].statistics.passescompleted}
-          Faltas: ${partido.teams[0].statistics.fouls}`;
+          Faltas: ${partido.teams[0].statistics.fouls}
+          Tarjetas amarillas: ${partido.teams[0].statistics.yellowcards}
+          Tarjetas rojas: ${partido.teams[0].statistics.redcards}
+          Fuera de juego: ${partido.teams[0].statistics.offsides}
+          Corners: ${partido.teams[0].statistics.corners}
+          Saques de banda: ${partido.teams[0].statistics.throwins}
+          Penales: ${partido.teams[0].statistics.penalties}
+          Tiros libres: ${partido.teams[0].statistics.freekicks}
+          Faltas recibidas: ${partido.teams[0].statistics.foulssuffered}
+          Goles encajados: ${partido.teams[0].statistics.goalsconceded}
+          Intercepciones: ${partido.teams[0].statistics.interceptions}
+          Autogoles: ${partido.teams[0].statistics.owngoals}
+          Entradas: ${partido.teams[0].statistics.tackles}
+          Entradas completadas: ${partido.teams[0].statistics.tacklescompleted}
+          Atajadas: ${partido.teams[0].statistics.saves}
+          Atajadas atrapadas: ${partido.teams[0].statistics.savescaught}
+          Distancia recorrida: ${partido.teams[0].statistics.distancecovered}
+          Asistencias: ${partido.teams[0].statistics.assists}
+          Despejes: ${partido.teams[0].statistics.goalkicks}
+          Pases clave: ${partido.teams[0].statistics.keypasses}
+          Oportunidades creadas: ${partido.teams[0].statistics.chancescreated}
+          Segundas asistencias: ${partido.teams[0].statistics.secondassists}
+          
+          
+          `;
           
           console.log("partido:", partido);
           console.log("mensaje:", mensaje);
